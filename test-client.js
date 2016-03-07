@@ -1,23 +1,30 @@
 console.log("node.js: %s", process.version);
 
 var http = require('http');
-var httpPort = 8080;
+var httpPort = 80;
 var httpMethod = "GET";
+
+var httpsAgent = new http.Agent({
+    keepAlive: true,
+    maxSockets: 1,
+});
 
 function getHttpsOptions(method, path) {
     return {
+        agent: httpsAgent,
         headers: {
-            'content-type': 'application/json',
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive',
         },
         method: method,
         host: "localhost",
         port: httpPort,
         path: path,
-        //ey: config.connectorClient.key,
-        //ert: config.connectorClient.cert,
-        //a: config.connectorClient.ca,
-        //assphrase: config.connectorClient.passphrase,
-        //heckServerIdentity: function(servername, cert) {return false;} // we don't actually have a public server name
+        // key: config.connectorClient.key,
+        // cert: config.connectorClient.cert,
+        // ca: config.connectorClient.ca,
+        // passphrase: config.connectorClient.passphrase,
+        // checkServerIdentity: function(servername, cert) {return false;} // we don't actually have a public server name
     };
 }
 
@@ -72,18 +79,34 @@ function httpHandler(response, callback) {
     });
 };
 
-function doRequest() {
-    return httpRequest(httpMethod, '/', null, function (error, response) {
+function doRequest(uri, callback) {
+    return httpRequest(httpMethod, uri, null, function (error, response) {
         if (error) {
             console.log("request failed");
-            throw error;
+        } else {
+            console.log("request success");
         }
 
-        console.log("request success");
+        if (callback) return callback(error, response);
         return;
     });
 }
 
-doRequest();
-doRequest();
-doRequest();
+doRequest('/1', function () {
+    doRequest('/2');
+});
+doRequest('/3');
+
+doRequest('/4', function () {
+    doRequest('/5');
+});
+doRequest('/6');
+
+doRequest('/7', function () {
+    doRequest('/8');
+});
+doRequest('/9');
+
+setTimeout(function() {
+    console.log('timeout');
+}, 2500);
