@@ -14,17 +14,11 @@ function getHttpsOptions(method, path) {
         agent: httpsAgent,
         headers: {
             'Content-Type': 'application/json',
-            'Connection': 'keep-alive',
         },
         method: method,
         host: "localhost",
         port: httpPort,
         path: path,
-        // key: config.connectorClient.key,
-        // cert: config.connectorClient.cert,
-        // ca: config.connectorClient.ca,
-        // passphrase: config.connectorClient.passphrase,
-        // checkServerIdentity: function(servername, cert) {return false;} // we don't actually have a public server name
     };
 }
 

@@ -9,21 +9,16 @@ function onSocketClose() {
 }
 
 var server = http.createServer(function (request, response) {
-    console.log(request.method + " " + request.url);
 
+    // remove listener before re-adding. this stops it from looking like multiple connections on keep-alive
     response.socket.removeListener('close', onSocketClose);
     response.socket.on('close', onSocketClose);
 
     if (request.method == httpMethod) {
-        request.on('data', function(chunk) {
-            //console.log(chunk.toString());
-        });
-
         request.on('end', function() {
-            console.log("server connections: " + server._connections);
+            console.log("server connections: " + server._connections + ", " + request.method + " " + request.url);
             response.writeHead(200, {
                 "Content-Type": "application/json",
-                "Connection": "keep-alive",
             });
             response.end();
         });
